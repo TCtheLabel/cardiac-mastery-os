@@ -44,6 +44,7 @@ export default function TrainingSessionPage({
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [finished, setFinished] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -123,10 +124,9 @@ export default function TrainingSessionPage({
   }
 
   const isLastQuestion = currentIndex === questions.length - 1;
-  const sessionComplete = isLastQuestion && evaluation !== null;
   const question = questions[currentIndex];
 
-  if (sessionComplete) {
+  if (finished) {
     return (
       <Card className="glass-panel">
         <CardContent className="space-y-4 p-10 text-center">
@@ -202,7 +202,11 @@ export default function TrainingSessionPage({
                 <p className="mt-1 text-foreground">{evaluation.principle}</p>
               </div>
 
-              {!isLastQuestion && (
+              {isLastQuestion ? (
+                <Button onClick={() => setFinished(true)} className="w-full">
+                  Finish Session
+                </Button>
+              ) : (
                 <Button onClick={handleNext} className="w-full">
                   Next Question →
                 </Button>
