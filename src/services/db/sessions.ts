@@ -106,6 +106,18 @@ export async function getSessionWithQuestions(
   };
 }
 
+export async function getQuestionById(id: string): Promise<Question | null> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("questions")
+    .select()
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw new Error(`Failed to fetch question ${id}: ${error.message}`);
+  return data ? toQuestion(data as QuestionRow) : null;
+}
+
 export async function listSessions(): Promise<TrainingSession[]> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { getSupabaseClient } from "@/lib/supabase/server";
 import { createSource } from "../sources";
-import { createSessionWithQuestions, getSessionWithQuestions, listSessions } from "../sessions";
+import { createSessionWithQuestions, getSessionWithQuestions, getQuestionById, listSessions } from "../sessions";
 
 async function cleanup() {
   const supabase = getSupabaseClient();
@@ -52,5 +52,22 @@ describe("sessions db service", () => {
     const sessions = await listSessions();
     const ids = sessions.map((s) => s.id);
     expect(ids.indexOf(second.id)).toBeLessThan(ids.indexOf(first.id));
+  });
+
+  it("fetches a single question by id", async () => {
+    const source = await createSource("Reviewed mitral valve repair technique.", "article_summary");
+    const { questions } = await createSessionWithQuestions(source.id, "Mitral Valve Repair", [
+      { category: "operative_planning", prompt: "How would you size the annuloplasty band?" },
+    ]);
+
+    const question = await getQuestionById(questions[0].id);
+    expect(question).not.toBeNull();
+    expect(question?.prompt).toBe("How would you size the annuloplasty band?");
+    expect(question?.sessionId).toBe(questions[0].sessionId);
+  });
+
+  it("returns null for a missing question id", async () => {
+    const question = await getQuestionById("00000000-0000-0000-0000-000000000001");
+    expect(question).toBeNull();
   });
 });
