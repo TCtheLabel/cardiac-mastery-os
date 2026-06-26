@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EmptyState } from "@/components/empty-state";
 import { listSessions } from "@/services/db/sessions";
 
 export default async function TrainingHistoryPage() {
@@ -6,15 +7,12 @@ export default async function TrainingHistoryPage() {
 
   if (sessions.length === 0) {
     return (
-      <div className="glass-panel p-10 text-center">
-        <h1 className="text-2xl font-medium text-foreground">Training History</h1>
-        <p className="mt-3 text-muted-foreground">
-          No training sessions yet. Head to Capture to generate your first one.
-        </p>
-        <Link href="/capture" className="mt-4 inline-block text-primary hover:underline">
-          Go to Capture
-        </Link>
-      </div>
+      <EmptyState
+        title="Training History"
+        message="No training sessions yet. Head to Capture to generate your first one."
+        ctaHref="/capture"
+        ctaLabel="Go to Capture"
+      />
     );
   }
 
