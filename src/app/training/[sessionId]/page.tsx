@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import type { Evaluation, Question, QuestionCategory, TrainingSession } from "@/types/database";
+import type { Citation, Evaluation, Question, QuestionCategory, TrainingSession } from "@/types/database";
 
 const CATEGORY_LABELS: Record<QuestionCategory, string> = {
   decision_making: "Decision Making",
@@ -36,6 +36,7 @@ export default function TrainingSessionPage({
 
   const [session, setSession] = useState<TrainingSession | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [citations, setCitations] = useState<Citation[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -61,6 +62,7 @@ export default function TrainingSessionPage({
         if (!cancelled) {
           setSession(data.session);
           setQuestions(data.questions);
+          setCitations(data.citations ?? []);
         }
       } catch (err) {
         if (!cancelled) setLoadError((err as Error).message);
@@ -146,6 +148,22 @@ export default function TrainingSessionPage({
       <p className="text-sm text-muted-foreground">
         Question {currentIndex + 1} of {questions.length}
       </p>
+
+      {citations.length > 0 && (
+        <details className="glass-panel rounded-lg p-4">
+          <summary className="cursor-pointer text-sm font-medium text-foreground">
+            Sources ({citations.length})
+          </summary>
+          <ul className="mt-3 space-y-2">
+            {citations.map((citation, index) => (
+              <li key={index} className="text-sm text-muted-foreground">
+                <span className="font-medium text-foreground">{citation.sourceTitle || "Source"}:</span>{" "}
+                {citation.text}
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
 
       <Card className="glass-panel">
         <CardHeader className="space-y-2">
