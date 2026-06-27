@@ -10,6 +10,8 @@
 
 **Tech Stack:** Next.js 15, TypeScript, Supabase (`@supabase/supabase-js`), OpenAI (`openai`), Vitest, `@modelcontextprotocol/sdk` (MCP client), `tsx` (script runner), `dotenv`.
 
+> **Status as of 2026-06-27 (paused mid-execution):** Tasks 1-9 complete, reviewed, and committed on branch `notebooklm-mcp-integration` (worktree `.worktrees/notebooklm-mcp-integration`). Tasks 10-14 not started. See `.worktrees/notebooklm-mcp-integration/handoff.md` for full resume instructions.
+
 ---
 
 ## Task 1: Make the test suite safe against production data
@@ -25,7 +27,7 @@
 - Modify: `src/app/api/generate-session/__tests__/route.test.ts`
 - Modify: `src/app/api/evaluate-response/__tests__/route.test.ts`
 
-- [ ] **Step 1: Disable Vitest file parallelism (fixes the cross-file race that causes FK violations)**
+- [x] **Step 1: Disable Vitest file parallelism (fixes the cross-file race that causes FK violations)**
 
 ```ts
 // vitest.config.ts
@@ -45,7 +47,7 @@ export default defineConfig(({ mode }) => ({
 }));
 ```
 
-- [ ] **Step 2: Scope `sources.test.ts` cleanup to rows it created**
+- [x] **Step 2: Scope `sources.test.ts` cleanup to rows it created**
 
 Replace the whole file:
 
@@ -84,7 +86,7 @@ describe("sources db service", () => {
 });
 ```
 
-- [ ] **Step 3: Scope `sessions.test.ts` cleanup to rows it created**
+- [x] **Step 3: Scope `sessions.test.ts` cleanup to rows it created**
 
 Replace the whole file:
 
@@ -164,7 +166,7 @@ describe("sessions db service", () => {
 });
 ```
 
-- [ ] **Step 4: Scope `responses-evaluations.test.ts` cleanup to rows it created**
+- [x] **Step 4: Scope `responses-evaluations.test.ts` cleanup to rows it created**
 
 Replace the whole file:
 
@@ -226,7 +228,7 @@ describe("evaluations db service", () => {
 });
 ```
 
-- [ ] **Step 5: Scope `mastery.test.ts` cleanup and rename topics to test-distinctive strings**
+- [x] **Step 5: Scope `mastery.test.ts` cleanup and rename topics to test-distinctive strings**
 
 Real AI-generated topics read like "Aortic Dissection Classification and Management" — but `"Aortic Dissection"` alone is a plausible enough real topic name that a blanket-by-name approach is risky. Prefix all test topic names with `__test__ ` so they can never collide with real data, and scope the delete to exactly those names.
 
@@ -278,7 +280,7 @@ describe("mastery db service", () => {
 });
 ```
 
-- [ ] **Step 6: Scope `generate-session` route test cleanup to rows it created**
+- [x] **Step 6: Scope `generate-session` route test cleanup to rows it created**
 
 Replace the whole file:
 
@@ -344,7 +346,7 @@ describe("POST /api/generate-session", () => {
 });
 ```
 
-- [ ] **Step 7: Scope `evaluate-response` route test cleanup and rename its topic constant**
+- [x] **Step 7: Scope `evaluate-response` route test cleanup and rename its topic constant**
 
 `"Post-op Tamponade Management"` is used verbatim as an example topic elsewhere in this codebase and is plausible as real data. Rename to a test-distinctive constant.
 
@@ -443,12 +445,12 @@ describe("POST /api/evaluate-response", () => {
 });
 ```
 
-- [ ] **Step 8: Run the full suite and confirm it passes deterministically**
+- [x] **Step 8: Run the full suite and confirm it passes deterministically**
 
 Run: `npm test`
 Expected: `Test Files  9 passed (9)`, `Tests  23 passed (23)`
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add vitest.config.ts src/services/db/__tests__/sources.test.ts src/services/db/__tests__/sessions.test.ts src/services/db/__tests__/responses-evaluations.test.ts src/services/db/__tests__/mastery.test.ts src/app/api/generate-session/__tests__/route.test.ts src/app/api/evaluate-response/__tests__/route.test.ts
@@ -468,7 +470,7 @@ each cleanup to the specific rows/topics each test created instead."
 **Files:**
 - Create: `supabase/migrations/20260627000000_notebooklm_integration.sql`
 
-- [ ] **Step 1: Write the migration file**
+- [x] **Step 1: Write the migration file**
 
 ```sql
 create table notebook_knowledge (
@@ -488,11 +490,11 @@ alter table training_sources add constraint training_sources_source_type_check
   check (source_type in ('reflection', 'case_note', 'article_summary', 'insight', 'notebook_sync'));
 ```
 
-- [ ] **Step 2: STOP — Thomas applies this manually**
+- [x] **Step 2: STOP — Thomas applies this manually**
 
 Open the Supabase Dashboard for this project → SQL Editor → New Query. Paste the full contents of `supabase/migrations/20260627000000_notebooklm_integration.sql` and run it. Confirm it completes with no errors, then tell the implementing agent to continue.
 
-- [ ] **Step 3: Verify the migration applied**
+- [x] **Step 3: Verify the migration applied**
 
 Run:
 
@@ -510,7 +512,7 @@ supabase.from("notebook_knowledge").select("*", { count: "exact", head: true }).
 
 Expected: `OK, count=0` (table exists and is empty). If it prints an error about the relation not existing, Step 2 was not completed — stop and re-check with Thomas before continuing.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add supabase/migrations/20260627000000_notebooklm_integration.sql
@@ -526,7 +528,7 @@ git commit -m "Add notebook_knowledge table and training_sources columns for Not
 - Modify: `src/services/ai/__tests__/generateSession.test.ts`
 - Modify: `src/services/ai/__tests__/evaluateResponse.test.ts`
 
-- [ ] **Step 1: Add `Citation`, `NotebookKnowledge`, extend `SourceType` and `TrainingSource`**
+- [x] **Step 1: Add `Citation`, `NotebookKnowledge`, extend `SourceType` and `TrainingSource`**
 
 In `src/types/database.ts`, change:
 
@@ -577,7 +579,7 @@ export interface NotebookKnowledge {
 }
 ```
 
-- [ ] **Step 2: Fix existing `TrainingSource` literals in `generateSession.test.ts`**
+- [x] **Step 2: Fix existing `TrainingSource` literals in `generateSession.test.ts`**
 
 In `src/services/ai/__tests__/generateSession.test.ts`, both literal `TrainingSource` objects (around lines 42 and 65) are now missing required fields. Add `domain: null,` and `citations: [],` to each, e.g.:
 
@@ -594,7 +596,7 @@ In `src/services/ai/__tests__/generateSession.test.ts`, both literal `TrainingSo
 
 Apply the same two added lines to the second literal (content: `"Reviewed an aortic dissection paper."`, sourceType: `"article_summary"`).
 
-- [ ] **Step 3: Fix existing `TrainingSource` literals in `evaluateResponse.test.ts`**
+- [x] **Step 3: Fix existing `TrainingSource` literals in `evaluateResponse.test.ts`**
 
 In `src/services/ai/__tests__/evaluateResponse.test.ts`, both literal `TrainingSource` objects (around lines 44 and 78) need the same two added fields:
 
@@ -611,17 +613,17 @@ In `src/services/ai/__tests__/evaluateResponse.test.ts`, both literal `TrainingS
 
 Apply the same two added lines to the second literal (content: `"Reviewed an aortic dissection paper."`, sourceType: `"article_summary"`).
 
-- [ ] **Step 4: Typecheck the whole project**
+- [x] **Step 4: Typecheck the whole project**
 
 Run: `npx tsc --noEmit`
 Expected: no errors.
 
-- [ ] **Step 5: Run the full test suite**
+- [x] **Step 5: Run the full test suite**
 
 Run: `npm test`
 Expected: `Tests  23 passed (23)` (no behavior changed yet, just types).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/types/database.ts src/services/ai/__tests__/generateSession.test.ts src/services/ai/__tests__/evaluateResponse.test.ts
@@ -636,7 +638,7 @@ git commit -m "Extend SourceType and TrainingSource for notebook-sourced content
 - Create: `src/services/db/notebookKnowledge.ts`
 - Create: `src/services/db/__tests__/notebookKnowledge.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // src/services/db/__tests__/notebookKnowledge.test.ts
@@ -682,12 +684,12 @@ describe("notebookKnowledge db service", () => {
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run src/services/db/__tests__/notebookKnowledge.test.ts`
 Expected: FAIL — `Failed to resolve import "../notebookKnowledge"` (module doesn't exist yet).
 
-- [ ] **Step 3: Implement the service**
+- [x] **Step 3: Implement the service**
 
 ```ts
 // src/services/db/notebookKnowledge.ts
@@ -744,12 +746,12 @@ export async function getNotebookKnowledge(domain: string): Promise<NotebookKnow
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run src/services/db/__tests__/notebookKnowledge.test.ts`
 Expected: PASS (3 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/services/db/notebookKnowledge.ts src/services/db/__tests__/notebookKnowledge.test.ts
@@ -764,7 +766,7 @@ git commit -m "Add notebookKnowledge db service for caching synced notebook cont
 - Modify: `src/services/db/sources.ts`
 - Modify: `src/services/db/__tests__/sources.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Add to `src/services/db/__tests__/sources.test.ts`, inside the existing `describe("sources db service", ...)` block, after the "creates a source and reads it back" test:
 
@@ -791,12 +793,12 @@ Add to `src/services/db/__tests__/sources.test.ts`, inside the existing `describ
   });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run src/services/db/__tests__/sources.test.ts`
 Expected: FAIL — TypeScript error (`createSource` doesn't accept a third argument yet) or a runtime error if the check constraint from Task 2 rejects `'notebook_sync'` (confirms Task 2 must be done first).
 
-- [ ] **Step 3: Implement the change**
+- [x] **Step 3: Implement the change**
 
 Replace the whole file `src/services/db/sources.ts`:
 
@@ -863,12 +865,12 @@ export async function getSourceById(id: string): Promise<TrainingSource | null> 
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run src/services/db/__tests__/sources.test.ts`
 Expected: PASS (4 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/services/db/sources.ts src/services/db/__tests__/sources.test.ts
@@ -883,7 +885,7 @@ git commit -m "Extend createSource with optional domain and citations for notebo
 - Modify: `src/services/ai/generateSession.ts`
 - Modify: `src/services/ai/__tests__/generateSession.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add to `src/services/ai/__tests__/generateSession.test.ts`, inside `describe("generateSession", ...)`, after the first test:
 
@@ -929,12 +931,12 @@ Add to `src/services/ai/__tests__/generateSession.test.ts`, inside `describe("ge
   });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run src/services/ai/__tests__/generateSession.test.ts`
 Expected: this specific test should actually already pass mechanically (the function doesn't validate `sourceType`), since Task 3 already made `TrainingSource` accept `domain`/`citations`. Run it anyway to confirm — if it passes already, that's expected; proceed to Step 3 for the prompt wording change regardless, since the goal of this task is the system prompt, not just this test.
 
-- [ ] **Step 3: Update the system prompt**
+- [x] **Step 3: Update the system prompt**
 
 In `src/services/ai/generateSession.ts`, change:
 
@@ -952,12 +954,12 @@ const SYSTEM_PROMPT = `You are an expert cardiac surgery educator creating delib
 Read the resident's submitted content — a reflection, case note, article summary, insight, or a source-grounded synthesis pulled from the resident's curated reference library (NotebookLM). Then:
 ```
 
-- [ ] **Step 4: Run the full test suite**
+- [x] **Step 4: Run the full test suite**
 
 Run: `npm test`
 Expected: `Tests  24 passed (24)`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/services/ai/generateSession.ts src/services/ai/__tests__/generateSession.test.ts
@@ -971,7 +973,7 @@ git commit -m "Teach generateSession to recognize notebook-sourced content"
 **Files:**
 - Modify: `package.json`, `package-lock.json`
 
-- [ ] **Step 1: Install dependencies**
+- [x] **Step 1: Install dependencies**
 
 ```bash
 npm install --save-dev tsx dotenv @modelcontextprotocol/sdk
@@ -979,12 +981,12 @@ npm install --save-dev tsx dotenv @modelcontextprotocol/sdk
 
 These are dev-time only: `scripts/*.ts` run locally via `tsx`, are never imported by anything under `src/app`, and are not bundled into the deployed app.
 
-- [ ] **Step 2: Verify install**
+- [x] **Step 2: Verify install**
 
 Run: `npm ls tsx dotenv @modelcontextprotocol/sdk`
 Expected: all three listed with no errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add package.json package-lock.json
@@ -1001,7 +1003,7 @@ git commit -m "Add tsx, dotenv, and @modelcontextprotocol/sdk for local notebook
 
 `getNotebookId` takes the lookup table as an optional parameter (defaulting to the real `DOMAIN_NOTEBOOKS` map) so tests can use a synthetic fixture table instead of depending on the real config's mutable placeholder/filled-in state.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // scripts/__tests__/notebook-domains.test.ts
@@ -1025,12 +1027,12 @@ describe("getNotebookId", () => {
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run scripts/__tests__/notebook-domains.test.ts`
 Expected: FAIL — module `../notebook-domains` doesn't exist yet.
 
-- [ ] **Step 3: Implement the config**
+- [x] **Step 3: Implement the config**
 
 ```ts
 // scripts/notebook-domains.ts
@@ -1062,12 +1064,12 @@ export function getNotebookId(domain: string, table: Record<string, string> = DO
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run scripts/__tests__/notebook-domains.test.ts`
 Expected: PASS (3 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add scripts/notebook-domains.ts scripts/__tests__/notebook-domains.test.ts
@@ -1084,7 +1086,7 @@ This is the only task that talks to the actual `notebooklm-mcp` tool. Its exact 
 - Create: `scripts/notebookLmClient.ts`
 - Create: `scripts/__tests__/notebookLmClient.test.ts`
 
-- [ ] **Step 1: Write the failing tests for `normalizeAskQuestionResult`**
+- [x] **Step 1: Write the failing tests for `normalizeAskQuestionResult`**
 
 ```ts
 // scripts/__tests__/notebookLmClient.test.ts
@@ -1138,12 +1140,12 @@ describe("normalizeAskQuestionResult", () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run scripts/__tests__/notebookLmClient.test.ts`
 Expected: FAIL — module `../notebookLmClient` doesn't exist yet.
 
-- [ ] **Step 3: Implement `notebookLmClient.ts`**
+- [x] **Step 3: Implement `notebookLmClient.ts`**
 
 ```ts
 // scripts/notebookLmClient.ts
@@ -1231,12 +1233,12 @@ export async function askNotebook(notebookId: string, question: string): Promise
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run scripts/__tests__/notebookLmClient.test.ts`
 Expected: PASS (4 tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add scripts/notebookLmClient.ts scripts/__tests__/notebookLmClient.test.ts
