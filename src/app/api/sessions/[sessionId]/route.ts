@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSessionWithQuestions } from "@/services/db/sessions";
+import { getSourceById } from "@/services/db/sources";
 
 export async function GET(
   _request: Request,
@@ -10,5 +11,11 @@ export async function GET(
   if (!result) {
     return NextResponse.json({ error: `Session ${sessionId} not found` }, { status: 404 });
   }
-  return NextResponse.json(result);
+
+  const source = await getSourceById(result.session.sourceId);
+
+  return NextResponse.json({
+    ...result,
+    citations: source?.citations ?? [],
+  });
 }
