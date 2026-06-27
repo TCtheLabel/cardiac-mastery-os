@@ -29,4 +29,25 @@ describe("sources db service", () => {
     const fetched = await getSourceById("00000000-0000-0000-0000-000000000000");
     expect(fetched).toBeNull();
   });
+
+  it("creates a notebook_sync source with domain and citations", async () => {
+    const citations = [{ text: "Type A dissections require emergent repair.", sourceTitle: "Sabiston Ch. 4" }];
+    const created = await createSource("Synthesis on aortic dissection.", "notebook_sync", {
+      domain: "aortic_surgery",
+      citations,
+    });
+    createdSourceIds.push(created.id);
+
+    expect(created.sourceType).toBe("notebook_sync");
+    expect(created.domain).toBe("aortic_surgery");
+    expect(created.citations).toEqual(citations);
+  });
+
+  it("defaults domain to null and citations to an empty array when omitted", async () => {
+    const created = await createSource("Reflected on a tough valve case today.", "reflection");
+    createdSourceIds.push(created.id);
+
+    expect(created.domain).toBeNull();
+    expect(created.citations).toEqual([]);
+  });
 });

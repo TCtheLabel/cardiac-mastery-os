@@ -21,11 +21,25 @@ function toTrainingSource(row: SourceRow): TrainingSource {
   };
 }
 
-export async function createSource(content: string, sourceType: SourceType): Promise<TrainingSource> {
+export interface CreateSourceOptions {
+  domain?: string;
+  citations?: Citation[];
+}
+
+export async function createSource(
+  content: string,
+  sourceType: SourceType,
+  options: CreateSourceOptions = {}
+): Promise<TrainingSource> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("training_sources")
-    .insert({ content, source_type: sourceType })
+    .insert({
+      content,
+      source_type: sourceType,
+      domain: options.domain ?? null,
+      citations: options.citations ?? [],
+    })
     .select()
     .single();
 
