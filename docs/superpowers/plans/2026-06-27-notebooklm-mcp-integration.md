@@ -10,7 +10,7 @@
 
 **Tech Stack:** Next.js 15, TypeScript, Supabase (`@supabase/supabase-js`), OpenAI (`openai`), Vitest, `@modelcontextprotocol/sdk` (MCP client), `tsx` (script runner), `dotenv`.
 
-> **Status as of 2026-06-27 (paused mid-execution):** Tasks 1-9 complete, reviewed, and committed on branch `notebooklm-mcp-integration` (worktree `.worktrees/notebooklm-mcp-integration`). Tasks 10-14 not started. See `.worktrees/notebooklm-mcp-integration/handoff.md` for full resume instructions.
+> **Status as of 2026-06-27:** Tasks 1-13 complete, reviewed, and committed on branch `notebooklm-mcp-integration` (worktree `.worktrees/notebooklm-mcp-integration`), 40/40 tests passing. Only Task 14 remains — a human checkpoint requiring Thomas's own Google/NotebookLM account, which no subagent can do. See `.worktrees/notebooklm-mcp-integration/handoff.md`.
 
 ---
 
@@ -1516,7 +1516,7 @@ No automated test — this codebase tests services/API routes, not pages (establ
 **Files:**
 - Modify: `src/app/training/[sessionId]/page.tsx`
 
-- [ ] **Step 1: Add citations state and fetch it**
+- [x] **Step 1: Add citations state and fetch it**
 
 In `src/app/training/[sessionId]/page.tsx`, change the type import:
 
@@ -1538,7 +1538,7 @@ In the `load()` function, where `setSession(data.session); setQuestions(data.que
           setCitations(data.citations ?? []);
 ```
 
-- [ ] **Step 2: Render a citations panel when present**
+- [x] **Step 2: Render a citations panel when present**
 
 In the active-question return block (the `return (<div className="space-y-6">...` near the bottom), add a collapsible panel right after the "Question X of Y" paragraph and before the question `<Card>`:
 
@@ -1566,16 +1566,16 @@ In the active-question return block (the `return (<div className="space-y-6">...
       <Card className="glass-panel">
 ```
 
-- [ ] **Step 3: Typecheck**
+- [x] **Step 3: Typecheck**
 
 Run: `npx tsc --noEmit`
 Expected: no errors.
 
-- [ ] **Step 4: Manual verification**
+- [x] **Step 4: Manual verification**
 
 Start the dev server (`npm run dev`), open any existing training session (created via the normal Capture flow), and confirm the page renders exactly as before with no citations panel (since `citations` will be `[]` for reflection/case_note/article_summary/insight sources). The notebook_sync case is verified end-to-end in Task 14, once real citations exist.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add "src/app/training/[sessionId]/page.tsx"
