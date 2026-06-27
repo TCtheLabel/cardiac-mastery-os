@@ -44,6 +44,8 @@ describe("generateSession", () => {
       content: "Managed a post-op tamponade overnight.",
       sourceType: "case_note",
       createdAt: new Date().toISOString(),
+      domain: null,
+      citations: [],
     };
 
     const result = await generateSession(source);
@@ -67,6 +69,8 @@ describe("generateSession", () => {
       content: "Reviewed an aortic dissection paper.",
       sourceType: "article_summary",
       createdAt: new Date().toISOString(),
+      domain: null,
+      citations: [],
     };
 
     await expect(generateSession(source)).rejects.toThrow("empty response");

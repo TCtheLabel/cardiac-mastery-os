@@ -1,11 +1,13 @@
 import { getSupabaseClient } from "@/lib/supabase/server";
-import type { SourceType, TrainingSource } from "@/types/database";
+import type { Citation, SourceType, TrainingSource } from "@/types/database";
 
 interface SourceRow {
   id: string;
   content: string;
   source_type: SourceType;
   created_at: string;
+  domain: string | null;
+  citations: Citation[];
 }
 
 function toTrainingSource(row: SourceRow): TrainingSource {
@@ -14,6 +16,8 @@ function toTrainingSource(row: SourceRow): TrainingSource {
     content: row.content,
     sourceType: row.source_type,
     createdAt: row.created_at,
+    domain: row.domain,
+    citations: row.citations,
   };
 }
 

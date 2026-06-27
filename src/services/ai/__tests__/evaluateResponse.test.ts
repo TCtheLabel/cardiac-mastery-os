@@ -46,6 +46,8 @@ describe("evaluateResponse", () => {
       content: "Managed a post-op tamponade overnight.",
       sourceType: "case_note",
       createdAt: new Date().toISOString(),
+      domain: null,
+      citations: [],
     };
 
     const result = await evaluateResponse({
@@ -80,6 +82,8 @@ describe("evaluateResponse", () => {
       content: "Reviewed an aortic dissection paper.",
       sourceType: "article_summary",
       createdAt: new Date().toISOString(),
+      domain: null,
+      citations: [],
     };
 
     await expect(

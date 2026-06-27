@@ -1,4 +1,9 @@
-export type SourceType = "reflection" | "case_note" | "article_summary" | "insight";
+export type SourceType = "reflection" | "case_note" | "article_summary" | "insight" | "notebook_sync";
+
+export interface Citation {
+  text: string;
+  sourceTitle: string;
+}
 
 export type QuestionCategory =
   | "decision_making"
@@ -14,6 +19,16 @@ export interface TrainingSource {
   content: string;
   sourceType: SourceType;
   createdAt: string;
+  domain: string | null;
+  citations: Citation[];
+}
+
+export interface NotebookKnowledge {
+  id: string;
+  domain: string;
+  content: string;
+  citations: Citation[];
+  syncedAt: string;
 }
 
 export interface TrainingSession {
