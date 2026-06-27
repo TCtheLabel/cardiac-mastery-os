@@ -14,16 +14,13 @@ vi.mock("@/services/ai/generateSession", () => ({
 
 import { POST } from "../route";
 
-async function cleanup() {
-  const supabase = getSupabaseClient();
-  await supabase
-    .from("training_sources")
-    .delete()
-    .neq("id", "00000000-0000-0000-0000-000000000000");
-}
+const createdSourceIds: string[] = [];
 
 afterEach(async () => {
-  await cleanup();
+  if (createdSourceIds.length === 0) return;
+  const supabase = getSupabaseClient();
+  await supabase.from("training_sources").delete().in("id", createdSourceIds);
+  createdSourceIds.length = 0;
 });
 
 function makeRequest(body: unknown) {
@@ -45,6 +42,7 @@ describe("POST /api/generate-session", () => {
     expect(body.sessionId).toBeDefined();
 
     const sessionData = await getSessionWithQuestions(body.sessionId);
+    if (sessionData) createdSourceIds.push(sessionData.session.sourceId);
     expect(sessionData?.session.topic).toBe("Post-op Tamponade Management");
     expect(sessionData?.questions).toHaveLength(2);
   });

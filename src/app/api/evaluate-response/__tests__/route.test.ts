@@ -16,19 +16,16 @@ vi.mock("@/services/ai/evaluateResponse", () => ({
 
 import { POST } from "../route";
 
-const TOPIC = "Post-op Tamponade Management";
-
-async function cleanup() {
-  const supabase = getSupabaseClient();
-  await supabase
-    .from("training_sources")
-    .delete()
-    .neq("id", "00000000-0000-0000-0000-000000000000");
-  await supabase.from("mastery_topics").delete().eq("topic", TOPIC);
-}
+const TOPIC = "__test__ Post-op Tamponade Management";
+const createdSourceIds: string[] = [];
 
 afterEach(async () => {
-  await cleanup();
+  const supabase = getSupabaseClient();
+  if (createdSourceIds.length > 0) {
+    await supabase.from("training_sources").delete().in("id", createdSourceIds);
+    createdSourceIds.length = 0;
+  }
+  await supabase.from("mastery_topics").delete().eq("topic", TOPIC);
 });
 
 function makeRequest(body: unknown) {
@@ -41,6 +38,7 @@ function makeRequest(body: unknown) {
 
 async function setupFixture() {
   const source = await createSource("Managed a post-op tamponade overnight.", "case_note");
+  createdSourceIds.push(source.id);
   const { questions } = await createSessionWithQuestions(source.id, TOPIC, [
     { category: "complication_management", prompt: "What were the early warning signs?" },
   ]);

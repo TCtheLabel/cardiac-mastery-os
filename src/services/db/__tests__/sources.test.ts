@@ -2,21 +2,19 @@ import { afterEach, describe, expect, it } from "vitest";
 import { getSupabaseClient } from "@/lib/supabase/server";
 import { createSource, getSourceById } from "../sources";
 
-async function cleanup() {
-  const supabase = getSupabaseClient();
-  await supabase
-    .from("training_sources")
-    .delete()
-    .neq("id", "00000000-0000-0000-0000-000000000000");
-}
+const createdSourceIds: string[] = [];
 
 afterEach(async () => {
-  await cleanup();
+  if (createdSourceIds.length === 0) return;
+  const supabase = getSupabaseClient();
+  await supabase.from("training_sources").delete().in("id", createdSourceIds);
+  createdSourceIds.length = 0;
 });
 
 describe("sources db service", () => {
   it("creates a source and reads it back", async () => {
     const created = await createSource("Reflected on a tough valve case today.", "reflection");
+    createdSourceIds.push(created.id);
 
     expect(created.id).toBeTruthy();
     expect(created.content).toBe("Reflected on a tough valve case today.");

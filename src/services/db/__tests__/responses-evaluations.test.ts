@@ -5,20 +5,18 @@ import { createSessionWithQuestions } from "../sessions";
 import { createResponse, getResponseById } from "../responses";
 import { createEvaluation } from "../evaluations";
 
-async function cleanup() {
-  const supabase = getSupabaseClient();
-  await supabase
-    .from("training_sources")
-    .delete()
-    .neq("id", "00000000-0000-0000-0000-000000000000");
-}
+const createdSourceIds: string[] = [];
 
 afterEach(async () => {
-  await cleanup();
+  if (createdSourceIds.length === 0) return;
+  const supabase = getSupabaseClient();
+  await supabase.from("training_sources").delete().in("id", createdSourceIds);
+  createdSourceIds.length = 0;
 });
 
 async function seedQuestion() {
   const source = await createSource("Reflected on an LVAD complication.", "reflection");
+  createdSourceIds.push(source.id);
   const { questions } = await createSessionWithQuestions(source.id, "LVAD Complications", [
     { category: "complication_management", prompt: "How would you triage a suspected pump thrombosis?" },
   ]);
