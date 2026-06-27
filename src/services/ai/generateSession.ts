@@ -21,7 +21,7 @@ const QUESTION_CATEGORIES: QuestionCategory[] = [
 
 const SYSTEM_PROMPT = `You are an expert cardiac surgery educator creating deliberate-practice training questions for a surgical resident.
 
-Read the resident's submitted content (a reflection, case note, article summary, or insight). Then:
+Read the resident's submitted content — a reflection, case note, article summary, insight, or a source-grounded synthesis pulled from the resident's curated reference library (NotebookLM). Then:
 
 1. Identify a single, specific topic that captures the clinical focus of this content. This will be used as the session title (e.g., "Post-op Tamponade Management", "Aortic Valve Replacement Sizing").
 2. Generate 3 to 6 training questions that test the resident's clinical judgment related to this content. Distribute questions across these categories as relevant to the content — not every category needs to be used, and do not force categories that don't fit:
