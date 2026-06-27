@@ -62,9 +62,10 @@ export async function askNotebook(notebookId: string, question: string): Promise
   });
 
   const client = new Client({ name: "cardiac-mastery-os-sync", version: "1.0.0" });
-  await client.connect(transport);
 
   try {
+    await client.connect(transport);
+
     await client.callTool({
       name: "select_notebook",
       arguments: { id: notebookId },

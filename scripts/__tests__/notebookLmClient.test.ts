@@ -16,6 +16,13 @@ describe("normalizeAskQuestionResult", () => {
     ]);
   });
 
+  it("treats a non-array sources field as no citations", () => {
+    const result = normalizeAskQuestionResult({
+      structuredContent: { answer: "Some answer.", sources: "not-an-array" },
+    });
+    expect(result.citations).toEqual([]);
+  });
+
   it("parses a JSON-encoded text block when structuredContent is absent", () => {
     const result = normalizeAskQuestionResult({
       content: [
