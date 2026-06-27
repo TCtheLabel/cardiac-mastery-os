@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "sync-notebook": "tsx scripts/sync-notebook.ts"
+    "sync-notebook": "tsx scripts/sync-notebook.ts",
+    "train-from-notebook": "tsx scripts/train-from-notebook.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
