@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { HeartIllustration } from "@/components/heart/heart-illustration";
+import { HeartHero } from "@/components/heart/heart-hero";
 import type { HeartRegion } from "@/types/database";
 
 const REGIONS: HeartRegion[] = [
@@ -42,7 +42,7 @@ export default function HeartPreviewPage() {
           </button>
         ))}
       </div>
-      <HeartIllustration highlightedRegion={region} className="mx-auto h-[480px] w-[400px]" />
+      <HeartHero highlightedRegion={region} className="mx-auto h-[480px] w-[400px]" />
     </div>
   );
 }
