@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/nav";
 
@@ -10,6 +10,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
 });
 
@@ -26,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased min-h-screen bg-background text-foreground`}
       >
         <Nav />
         <main className="mx-auto max-w-3xl px-6 py-12">{children}</main>
