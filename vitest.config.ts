@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { defaultExclude, defineConfig } from "vitest/config";
 import { loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -10,5 +10,6 @@ export default defineConfig(({ mode }) => ({
     globals: true,
     env: loadEnv(mode, process.cwd(), ""),
     fileParallelism: false,
+    exclude: [...defaultExclude, "**/.worktrees/**"],
   },
 }));
