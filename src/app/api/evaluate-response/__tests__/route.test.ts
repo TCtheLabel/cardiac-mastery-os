@@ -14,6 +14,14 @@ vi.mock("@/services/ai/evaluateResponse", () => ({
   }),
 }));
 
+const { mockClassifyTopicRegion } = vi.hoisted(() => ({
+  mockClassifyTopicRegion: vi.fn(),
+}));
+
+vi.mock("@/services/ai/classifyTopicRegion", () => ({
+  classifyTopicRegion: mockClassifyTopicRegion,
+}));
+
 import { POST } from "../route";
 
 const TOPIC = "__test__ Post-op Tamponade Management";
@@ -26,6 +34,7 @@ afterEach(async () => {
     createdSourceIds.length = 0;
   }
   await supabase.from("mastery_topics").delete().eq("topic", TOPIC);
+  mockClassifyTopicRegion.mockReset();
 });
 
 function makeRequest(body: unknown) {
@@ -47,6 +56,7 @@ async function setupFixture() {
 
 describe("POST /api/evaluate-response", () => {
   it("creates a response, evaluation, and updates mastery progress", async () => {
+    mockClassifyTopicRegion.mockResolvedValueOnce("whole_heart");
     const { question } = await setupFixture();
 
     const res = await POST(
