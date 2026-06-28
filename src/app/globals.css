@@ -39,6 +39,10 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-claret: var(--claret);
+  --color-oxidized-blood: var(--oxidized-blood);
+  --color-bone: var(--bone);
+  --color-steel: var(--steel);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -143,5 +147,14 @@
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid hsl(var(--border) / 0.5);
     border-radius: var(--radius);
+  }
+
+  .glass-panel-accent {
+    background-color: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid color-mix(in srgb, var(--claret) 50%, transparent);
+    border-radius: var(--radius);
+    box-shadow: 0 0 30px -12px var(--claret);
   }
 }
