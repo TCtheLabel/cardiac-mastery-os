@@ -9,50 +9,54 @@ export interface AskQuestionResult {
 
 interface RawToolResult {
   content?: Array<{ type: string; text?: string }>;
-  structuredContent?: Record<string, unknown>;
 }
 
-function normalizeCitation(raw: unknown): Citation {
-  if (typeof raw === "string") {
-    return { text: raw, sourceTitle: "" };
-  }
-  if (raw && typeof raw === "object") {
-    const r = raw as Record<string, unknown>;
-    const text = typeof r.snippet === "string" ? r.snippet : typeof r.text === "string" ? r.text : "";
-    const sourceTitle =
-      typeof r.title === "string" ? r.title : typeof r.sourceTitle === "string" ? r.sourceTitle : "";
-    return { text, sourceTitle };
-  }
-  return { text: "", sourceTitle: "" };
+interface RawSource {
+  sourceName?: string;
+  sourceText?: string;
+}
+
+interface ToolEnvelope {
+  success: boolean;
+  data?: {
+    answer?: string;
+    sources?: RawSource[];
+  };
+  error?: string;
+}
+
+function normalizeCitation(raw: RawSource): Citation {
+  return {
+    text: typeof raw.sourceText === "string" ? raw.sourceText : "",
+    sourceTitle: typeof raw.sourceName === "string" ? raw.sourceName : "",
+  };
 }
 
 export function normalizeAskQuestionResult(raw: RawToolResult): AskQuestionResult {
-  const structured = raw.structuredContent;
-
-  if (structured && typeof structured.answer === "string") {
-    const rawSources = Array.isArray(structured.sources) ? structured.sources : [];
-    return {
-      content: structured.answer,
-      citations: rawSources.map(normalizeCitation),
-    };
-  }
-
   const textBlock = (raw.content ?? []).find((block) => block.type === "text" && typeof block.text === "string");
   if (!textBlock?.text) {
-    throw new Error("ask_question returned no usable text or structured content");
+    throw new Error("ask_question returned no usable text content");
   }
 
+  let envelope: ToolEnvelope;
   try {
-    const parsed = JSON.parse(textBlock.text) as { answer?: string; sources?: unknown[] };
-    if (typeof parsed.answer === "string") {
-      const rawSources = Array.isArray(parsed.sources) ? parsed.sources : [];
-      return { content: parsed.answer, citations: rawSources.map(normalizeCitation) };
-    }
+    envelope = JSON.parse(textBlock.text) as ToolEnvelope;
   } catch {
-    // Not JSON — fall through to plain text below.
+    // Not the tool's standard {success, data} envelope — treat as plain text.
+    return { content: textBlock.text, citations: [] };
   }
 
-  return { content: textBlock.text, citations: [] };
+  if (!envelope.success) {
+    throw new Error(`ask_question failed: ${envelope.error ?? "unknown error"}`);
+  }
+
+  const answer = envelope.data?.answer;
+  if (typeof answer !== "string") {
+    throw new Error("ask_question succeeded but returned no answer text");
+  }
+
+  const rawSources = Array.isArray(envelope.data?.sources) ? envelope.data.sources : [];
+  return { content: answer, citations: rawSources.map(normalizeCitation) };
 }
 
 export async function askNotebook(notebookId: string, question: string): Promise<AskQuestionResult> {
@@ -71,10 +75,14 @@ export async function askNotebook(notebookId: string, question: string): Promise
       arguments: { id: notebookId },
     });
 
-    const result = await client.callTool({
-      name: "ask_question",
-      arguments: { question, source_format: "json" },
-    });
+    const result = await client.callTool(
+      {
+        name: "ask_question",
+        arguments: { question, source_format: "json" },
+      },
+      undefined,
+      { timeout: 180_000 }
+    );
 
     return normalizeAskQuestionResult(result as RawToolResult);
   } finally {

@@ -1,13 +1,13 @@
 // Filled in by Thomas using notebooklm-mcp's add_notebook/list_notebooks tools
 // against his already-existing, already-populated NotebookLM notebooks.
 export const DOMAIN_NOTEBOOKS: Record<string, string> = {
-  foundations: "<notebooklm-library-id>",
-  aortic_surgery: "<notebooklm-library-id>",
-  valve_surgery: "<notebooklm-library-id>",
-  coronary_surgery: "<notebooklm-library-id>",
-  heart_failure_lvad_transplant: "<notebooklm-library-id>",
-  critical_care_ecmo_perfusion: "<notebooklm-library-id>",
-  cardiac_oncology: "<notebooklm-library-id>",
+  foundations: "cardiac-surgery-foundations",
+  aortic_surgery: "aortic-surgery",
+  valve_surgery: "valve-surgery",
+  coronary_surgery: "coronary-surgery",
+  heart_failure_lvad_transplant: "heart-failure-mechanical-suppo",
+  critical_care_ecmo_perfusion: "critical-care-ecmo-perfusion",
+  cardiac_oncology: "cardiac-oncology",
 };
 
 export function getNotebookId(domain: string, table: Record<string, string> = DOMAIN_NOTEBOOKS): string {
