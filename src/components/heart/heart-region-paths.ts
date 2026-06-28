@@ -5,26 +5,40 @@ export const HEART_VIEWBOX = "0 0 400 480";
 export const PERICARDIUM_PATH =
   "M200,458 C168,432 108,388 82,332 C58,280 58,222 92,184 C120,152 162,150 188,176 C194,182 198,188 200,194 C202,188 206,182 212,176 C238,150 280,152 308,184 C342,222 342,280 318,332 C292,388 232,432 200,458 Z";
 
+export const BASE_HEART_PATH = PERICARDIUM_PATH;
+
 interface RegionShape {
   paths: string[];
   strokeOnly?: boolean;
+  /**
+   * When true, this region's shape is invisible at rest and only fades in when
+   * highlighted, clipped to BASE_HEART_PATH so it can never poke outside the
+   * silhouette. Used for the large chamber zones — at rest, the heart reads as one
+   * solid shape; on highlight, a clipped zone lights up. Avoids the failure mode of
+   * several independently-bordered chamber blobs competing for the "is this a heart"
+   * read at all times.
+   */
+  clipToHeart?: boolean;
 }
 
 export const REGION_SHAPES: Record<HeartRegion, RegionShape> = {
   atria: {
+    clipToHeart: true,
     paths: [
-      "M188,176 C165,144 128,135 100,157 C76,176 70,208 84,236 C98,263 128,276 156,268 C176,262 190,244 193,220 C195,204 193,189 188,176 Z",
-      "M212,176 C235,144 272,135 300,157 C324,176 330,208 316,236 C302,263 272,276 244,268 C224,262 210,244 207,220 C205,204 207,189 212,176 Z",
+      "M188,176 C160,138 115,128 85,152 C58,174 50,212 66,244 C82,276 120,290 152,278 C176,269 192,246 192,218 C192,204 190,190 188,176 Z",
+      "M212,176 C240,138 285,128 315,152 C342,174 350,212 334,244 C318,276 280,290 248,278 C224,269 208,246 208,218 C208,204 210,190 212,176 Z",
     ],
   },
   right_ventricle: {
+    clipToHeart: true,
     paths: [
-      "M155,245 C115,252 88,288 84,328 C80,370 100,412 138,438 C162,454 184,452 192,432 C200,412 195,380 188,345 C182,310 178,276 172,254 C168,246 162,243 155,245 Z",
+      "M170,230 C120,245 85,290 84,338 C83,388 115,432 165,452 C195,464 200,440 192,415 C180,378 172,330 170,280 C169,260 170,244 170,230 Z",
     ],
   },
   left_ventricle: {
+    clipToHeart: true,
     paths: [
-      "M245,245 C285,252 312,288 316,328 C320,370 300,412 200,455 C195,458 195,448 200,432 C208,412 212,380 216,350 C220,310 224,276 228,254 C232,246 238,243 245,245 Z",
+      "M230,230 C280,245 315,290 316,338 C317,388 285,432 235,452 C205,464 200,440 208,415 C220,378 228,330 230,280 C231,260 230,244 230,230 Z",
     ],
   },
   aortic_root_great_vessels: {
@@ -40,8 +54,6 @@ export const REGION_SHAPES: Record<HeartRegion, RegionShape> = {
       "M201,258 C202,288 204,318 209,350 C214,384 222,412 200,448",
       "M192,278 C172,288 154,302 140,322",
       "M208,278 C228,288 246,302 262,324",
-      "M190,310 C168,322 150,340 138,362",
-      "M210,312 C232,326 250,344 262,368",
     ],
   },
   aortic_valve: {
