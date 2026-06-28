@@ -14,6 +14,18 @@ export type QuestionCategory =
 
 export type QualitySignal = "strong" | "adequate" | "weak";
 
+export type HeartRegion =
+  | "aortic_valve"
+  | "mitral_valve"
+  | "right_sided_valves"
+  | "left_ventricle"
+  | "right_ventricle"
+  | "atria"
+  | "coronary_arteries"
+  | "aortic_root_great_vessels"
+  | "pericardium"
+  | "whole_heart";
+
 export interface TrainingSource {
   id: string;
   content: string;
@@ -70,4 +82,5 @@ export interface MasteryTopic {
   confidenceScore: number;
   sessionCount: number;
   weakAreas: string[];
+  region: HeartRegion | null;
 }
