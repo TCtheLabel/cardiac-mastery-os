@@ -38,6 +38,14 @@ export async function upsertNotebookKnowledge(
   return toNotebookKnowledge(data as NotebookKnowledgeRow);
 }
 
+export async function listNotebookKnowledge(): Promise<NotebookKnowledge[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.from("notebook_knowledge").select().order("domain", { ascending: true });
+
+  if (error) throw new Error(`Failed to list notebook knowledge: ${error.message}`);
+  return (data as NotebookKnowledgeRow[]).map(toNotebookKnowledge);
+}
+
 export async function getNotebookKnowledge(domain: string): Promise<NotebookKnowledge | null> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase

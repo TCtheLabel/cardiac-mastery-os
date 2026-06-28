@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { getSupabaseClient } from "@/lib/supabase/server";
-import { getNotebookKnowledge, upsertNotebookKnowledge } from "../notebookKnowledge";
+import { getNotebookKnowledge, listNotebookKnowledge, upsertNotebookKnowledge } from "../notebookKnowledge";
 
 const TEST_DOMAIN = "__test__ aortic_surgery";
 
@@ -36,5 +36,19 @@ describe("notebookKnowledge db service", () => {
   it("returns null for an unknown domain", async () => {
     const fetched = await getNotebookKnowledge("__test__ does_not_exist");
     expect(fetched).toBeNull();
+  });
+});
+
+describe("listNotebookKnowledge", () => {
+  it("includes a freshly upserted domain in the full list", async () => {
+    const citations = [{ text: "Class A dissections involve the ascending aorta.", sourceTitle: "Sabiston Ch. 4" }];
+    await upsertNotebookKnowledge(TEST_DOMAIN, "Synthesis content.", citations);
+
+    const all = await listNotebookKnowledge();
+    const found = all.find((row) => row.domain === TEST_DOMAIN);
+
+    expect(found).toBeDefined();
+    expect(found?.content).toBe("Synthesis content.");
+    expect(found?.citations).toEqual(citations);
   });
 });
