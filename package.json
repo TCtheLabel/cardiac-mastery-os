@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "sync-notebook": "tsx scripts/sync-notebook.ts",
-    "train-from-notebook": "tsx scripts/train-from-notebook.ts"
+    "train-from-notebook": "tsx scripts/train-from-notebook.ts",
+    "backfill-topic-regions": "tsx scripts/backfill-topic-regions.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
