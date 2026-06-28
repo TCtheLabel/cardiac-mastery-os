@@ -10,7 +10,7 @@
 
 **Tech Stack:** Next.js 15, TypeScript, Supabase (`@supabase/supabase-js`), OpenAI (`openai`), Vitest, `@modelcontextprotocol/sdk` (MCP client), `tsx` (script runner), `dotenv`.
 
-> **Status as of 2026-06-27:** Tasks 1-13 complete, reviewed, and committed on branch `notebooklm-mcp-integration` (worktree `.worktrees/notebooklm-mcp-integration`), 40/40 tests passing. Only Task 14 remains — a human checkpoint requiring Thomas's own Google/NotebookLM account, which no subagent can do. See `.worktrees/notebooklm-mcp-integration/handoff.md`.
+> **Status as of 2026-06-28:** All 14 tasks complete and committed on branch `notebooklm-mcp-integration` (worktree `.worktrees/notebooklm-mcp-integration`), 41/41 tests passing. Task 14's real end-to-end run surfaced and fixed two real bugs in `normalizeAskQuestionResult` (wrong envelope shape, request timeout too short) — see commit `8ea3674`. All 7 domain notebooks are registered and `aortic_surgery` is fully synced and verified live (real citations rendering in the training UI). Remaining: a final full-implementation code review, then `superpowers:finishing-a-development-branch`.
 
 ---
 
@@ -1255,7 +1255,7 @@ No automated test — this orchestrates a real subprocess (browser automation ag
 - Create: `scripts/sync-notebook.ts`
 - Modify: `package.json`
 
-- [ ] **Step 1: Write the script**
+- [x] **Step 1: Write the script**
 
 ```ts
 // scripts/sync-notebook.ts
@@ -1293,7 +1293,7 @@ main().catch((error) => {
 });
 ```
 
-- [ ] **Step 2: Add the npm script entry**
+- [x] **Step 2: Add the npm script entry**
 
 In `package.json`, add to `"scripts"`:
 
@@ -1301,12 +1301,12 @@ In `package.json`, add to `"scripts"`:
 "sync-notebook": "tsx scripts/sync-notebook.ts",
 ```
 
-- [ ] **Step 3: Verify it runs and fails correctly without configuration (expected at this point)**
+- [x] **Step 3: Verify it runs and fails correctly without configuration (expected at this point)**
 
 Run: `npm run sync-notebook -- aortic_surgery`
 Expected: fails with `Domain "aortic_surgery" has no notebooklm-mcp library id configured yet.` — this confirms the script wires up correctly end-to-end up to the point where real configuration (Task 14) is required.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add scripts/sync-notebook.ts package.json
@@ -1323,7 +1323,7 @@ No automated test — verified manually in Task 14 alongside `sync-notebook`.
 - Create: `scripts/train-from-notebook.ts`
 - Modify: `package.json`
 
-- [ ] **Step 1: Write the script**
+- [x] **Step 1: Write the script**
 
 ```ts
 // scripts/train-from-notebook.ts
@@ -1365,7 +1365,7 @@ main().catch((error) => {
 });
 ```
 
-- [ ] **Step 2: Add the npm script entry**
+- [x] **Step 2: Add the npm script entry**
 
 In `package.json`, add to `"scripts"`:
 
@@ -1373,12 +1373,12 @@ In `package.json`, add to `"scripts"`:
 "train-from-notebook": "tsx scripts/train-from-notebook.ts",
 ```
 
-- [ ] **Step 3: Verify it runs and fails correctly without synced content (expected at this point)**
+- [x] **Step 3: Verify it runs and fails correctly without synced content (expected at this point)**
 
 Run: `npm run train-from-notebook -- aortic_surgery`
 Expected: fails with `No synced content for domain "aortic_surgery". Run "npm run sync-notebook -- aortic_surgery" first.`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add scripts/train-from-notebook.ts package.json
@@ -1393,7 +1393,7 @@ git commit -m "Add train-from-notebook script"
 - Modify: `src/app/api/sessions/[sessionId]/route.ts`
 - Create: `src/app/api/sessions/[sessionId]/__tests__/route.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```ts
 // src/app/api/sessions/[sessionId]/__tests__/route.test.ts
@@ -1457,12 +1457,12 @@ describe("GET /api/sessions/[sessionId]", () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `npx vitest run "src/app/api/sessions/[sessionId]/__tests__/route.test.ts"`
 Expected: FAIL — `body.citations` is `undefined`, not `[]`.
 
-- [ ] **Step 3: Implement the change**
+- [x] **Step 3: Implement the change**
 
 Replace the whole file `src/app/api/sessions/[sessionId]/route.ts`:
 
@@ -1490,17 +1490,17 @@ export async function GET(
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run "src/app/api/sessions/[sessionId]/__tests__/route.test.ts"`
 Expected: PASS (3 tests).
 
-- [ ] **Step 5: Run the full suite**
+- [x] **Step 5: Run the full suite**
 
 Run: `npm test`
 Expected: all tests pass (31 total).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add "src/app/api/sessions/[sessionId]/route.ts" "src/app/api/sessions/[sessionId]/__tests__/route.test.ts"
@@ -1588,7 +1588,7 @@ git commit -m "Render citations panel during training when the source has them"
 
 **Human checkpoint:** every step here requires Thomas's own Google account, browser, and NotebookLM notebooks. A subagent cannot complete this task.
 
-- [ ] **Step 1: One-time `notebooklm-mcp` auth**
+- [x] **Step 1: One-time `notebooklm-mcp` auth**
 
 If not already authenticated (e.g. via a personal Claude Desktop/Code MCP setup), run:
 
@@ -1598,15 +1598,15 @@ npx notebooklm-mcp@latest
 
 and complete the one-time interactive Google login when the browser window opens. Auth persists locally afterward — this is a one-time step, not part of the regular sync flow.
 
-- [ ] **Step 2: Register one real domain notebook**
+- [x] **Step 2: Register one real domain notebook**
 
 Using `notebooklm-mcp`'s tools (via Claude Desktop/Code if already configured there, or any MCP-capable client), call `add_notebook` with the share URL of one existing domain notebook (e.g. Aortic Surgery), or `list_notebooks` if it's already registered. Note the returned library `id`.
 
-- [ ] **Step 3: Fill in the config**
+- [x] **Step 3: Fill in the config**
 
 In `scripts/notebook-domains.ts`, replace the placeholder for that one domain (e.g. `aortic_surgery`) with the real id from Step 2. Leave the rest as placeholders for now — they can be filled in later the same way, one line each, with no code changes.
 
-- [ ] **Step 4: Run sync**
+- [x] **Step 4: Run sync**
 
 ```bash
 npm run sync-notebook -- aortic_surgery
@@ -1616,7 +1616,7 @@ Expected: prints `Synced "aortic_surgery": N chars, M citations.` If it errors, 
 - MCP/browser-automation error → re-run; this integration is expected to be occasionally flaky per the design spec.
 - Citation/content shape looks wrong (e.g. 0 citations when sources clearly exist, or garbled content) → `normalizeAskQuestionResult` in `scripts/notebookLmClient.ts` (Task 9) needs its field-name assumptions adjusted to match what this real run actually returned. Add a temporary `console.log(JSON.stringify(result))` right before the `normalizeAskQuestionResult` call in `askNotebook` to inspect the real shape, fix the field lookups, remove the log, and re-run.
 
-- [ ] **Step 5: Run train-from-notebook**
+- [x] **Step 5: Run train-from-notebook**
 
 ```bash
 npm run train-from-notebook -- aortic_surgery
@@ -1624,14 +1624,14 @@ npm run train-from-notebook -- aortic_surgery
 
 Expected: prints a `http://localhost:3000/training/<sessionId>` URL.
 
-- [ ] **Step 6: Complete the session in the browser**
+- [x] **Step 6: Complete the session in the browser**
 
 With the dev server running (`npm run dev`), open the printed URL. Confirm:
 - The "Sources" panel appears and lists real citations.
 - Questions read naturally as being about the synced domain content (not generic).
 - Answering a question and submitting still evaluates normally and updates mastery tracking, exactly as with a regular captured source.
 
-- [ ] **Step 7: Commit the filled-in config**
+- [x] **Step 7: Commit the filled-in config**
 
 ```bash
 git add scripts/notebook-domains.ts
