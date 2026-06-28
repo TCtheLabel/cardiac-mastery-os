@@ -16,5 +16,9 @@ export default async function TrainNotebookPage() {
     );
   }
 
-  return <TrainNotebookForm domains={knowledge.map((row) => row.domain)} />;
+  return (
+    <TrainNotebookForm
+      domains={knowledge.map((row) => ({ domain: row.domain, syncedAt: row.syncedAt }))}
+    />
+  );
 }

@@ -16,8 +16,22 @@ const DOMAIN_LABELS: Record<string, string> = {
   cardiac_oncology: "Cardiac Oncology",
 };
 
+function formatRelativeSync(syncedAt: string): string {
+  const diffMs = Date.now() - new Date(syncedAt).getTime();
+  const diffMinutes = Math.round(diffMs / 60_000);
+  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
+  if (Math.abs(diffMinutes) < 60) return `Synced ${rtf.format(-diffMinutes, "minute")}`;
+  const diffHours = Math.round(diffMinutes / 60);
+  if (Math.abs(diffHours) < 24) return `Synced ${rtf.format(-diffHours, "hour")}`;
+  const diffDays = Math.round(diffHours / 24);
+  if (Math.abs(diffDays) < 30) return `Synced ${rtf.format(-diffDays, "day")}`;
+  const diffMonths = Math.round(diffDays / 30);
+  return `Synced ${rtf.format(-diffMonths, "month")}`;
+}
+
 interface TrainNotebookFormProps {
-  domains: string[];
+  domains: { domain: string; syncedAt: string }[];
 }
 
 export function TrainNotebookForm({ domains }: TrainNotebookFormProps) {
@@ -56,18 +70,19 @@ export function TrainNotebookForm({ domains }: TrainNotebookFormProps) {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex flex-wrap gap-2">
-          {domains.map((value) => (
+          {domains.map(({ domain: value, syncedAt }) => (
             <button
               key={value}
               type="button"
               onClick={() => setDomain(value)}
-              className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+              className={`rounded-xl border px-4 py-1.5 text-sm transition-colors ${
                 domain === value
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              {DOMAIN_LABELS[value] ?? value}
+              <span className="block">{DOMAIN_LABELS[value] ?? value}</span>
+              <span className="block text-xs opacity-70">{formatRelativeSync(syncedAt)}</span>
             </button>
           ))}
         </div>
