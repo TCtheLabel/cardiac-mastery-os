@@ -81,7 +81,7 @@ export async function askNotebook(notebookId: string, question: string): Promise
         arguments: { question, source_format: "json" },
       },
       undefined,
-      { timeout: 180_000 }
+      { timeout: 300_000 }
     );
 
     return normalizeAskQuestionResult(result as RawToolResult);
