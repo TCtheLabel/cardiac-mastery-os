@@ -1,5 +1,6 @@
 import { getSupabaseClient } from "@/lib/supabase/server";
-import type { MasteryTopic, QualitySignal } from "@/types/database";
+import { classifyTopicRegion } from "@/services/ai/classifyTopicRegion";
+import type { HeartRegion, MasteryTopic, QualitySignal } from "@/types/database";
 
 interface MasteryTopicRow {
   id: string;
@@ -7,6 +8,7 @@ interface MasteryTopicRow {
   confidence_score: number;
   session_count: number;
   weak_areas: string[];
+  region: string | null;
 }
 
 function toMasteryTopic(row: MasteryTopicRow): MasteryTopic {
@@ -16,6 +18,7 @@ function toMasteryTopic(row: MasteryTopicRow): MasteryTopic {
     confidenceScore: row.confidence_score,
     sessionCount: row.session_count,
     weakAreas: row.weak_areas,
+    region: row.region as HeartRegion | null,
   };
 }
 
@@ -37,6 +40,14 @@ export async function listMasteryTopics(): Promise<MasteryTopic[]> {
 
   if (error) throw new Error(`Failed to list mastery topics: ${error.message}`);
   return (data as MasteryTopicRow[]).map(toMasteryTopic);
+}
+
+async function classifyRegionSafely(topic: string): Promise<HeartRegion> {
+  try {
+    return await classifyTopicRegion(topic);
+  } catch {
+    return "whole_heart";
+  }
 }
 
 export async function recordMasteryProgress(
@@ -63,18 +74,21 @@ export async function recordMasteryProgress(
 
   const nextWeakAreas = mergeWeakAreas(existing?.weakAreas ?? [], newMissedConcepts);
 
+  const payload: Record<string, unknown> = {
+    id: existing?.id,
+    topic,
+    confidence_score: Math.round(nextConfidence * 100) / 100,
+    session_count: (existing?.sessionCount ?? 0) + 1,
+    weak_areas: nextWeakAreas,
+  };
+
+  if (!existing) {
+    payload.region = await classifyRegionSafely(topic);
+  }
+
   const { data: savedRow, error: saveError } = await supabase
     .from("mastery_topics")
-    .upsert(
-      {
-        id: existing?.id,
-        topic,
-        confidence_score: Math.round(nextConfidence * 100) / 100,
-        session_count: (existing?.sessionCount ?? 0) + 1,
-        weak_areas: nextWeakAreas,
-      },
-      { onConflict: "topic" }
-    )
+    .upsert(payload, { onConflict: "topic" })
     .select()
     .single();
 
