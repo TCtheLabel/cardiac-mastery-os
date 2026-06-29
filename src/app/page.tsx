@@ -29,15 +29,15 @@ export default async function Home() {
       <div className="space-y-8">
         <Link
           href={`/capture?topic=${encodeURIComponent(recommended.topic)}`}
-          className="glass-panel block space-y-2 p-6 transition-opacity hover:opacity-80"
+          className="glass-panel-accent block space-y-2 p-6 transition-opacity hover:opacity-80"
         >
-          <p className="text-sm text-muted-foreground">Recommended Focus</p>
-          <p className="text-xl font-medium text-foreground">{recommended.topic}</p>
-          <p className="text-sm text-muted-foreground">Confidence: {Math.round(recommended.confidenceScore)}</p>
+          <p className="text-sm uppercase tracking-wide text-steel">Recommended Focus</p>
+          <p className="text-xl font-medium text-bone">{recommended.topic}</p>
+          <p className="text-sm text-steel">Confidence: {Math.round(recommended.confidenceScore)}</p>
         </Link>
 
         <div className="space-y-3">
-          <h2 className="text-sm font-medium text-muted-foreground">Topic Mastery</h2>
+          <h2 className="text-sm uppercase tracking-wide text-steel">Topic Mastery</h2>
           <div className="grid gap-4 sm:grid-cols-3">
             {weakestTopics.map((topic) => (
               <MasteryTopicCard
@@ -51,13 +51,13 @@ export default async function Home() {
         </div>
 
         <div className="space-y-3">
-          <h2 className="text-sm font-medium text-muted-foreground">Recent Activity</h2>
+          <h2 className="text-sm uppercase tracking-wide text-steel">Recent Activity</h2>
           <ul className="space-y-3">
             {recentSessions.map((session) => (
-              <li key={session.id} className="glass-panel p-4">
+              <li key={session.id} className="glass-panel-accent p-4">
                 <Link href={`/training/${session.id}`} className="flex items-center justify-between">
-                  <span className="text-foreground">{session.topic ?? "Untitled Session"}</span>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-bone">{session.topic ?? "Untitled Session"}</span>
+                  <span className="text-sm text-steel">
                     {new Date(session.createdAt).toLocaleDateString(undefined, {
                       year: "numeric",
                       month: "short",
